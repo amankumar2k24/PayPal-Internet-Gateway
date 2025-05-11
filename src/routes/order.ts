@@ -5,7 +5,7 @@ import { verifyJwt } from "../helpers/verifyJWT";
 import { captureOrder, createOrder, webhook } from "../controllers/order";
 import { getUniqueCountryMapping } from "../controllers/pincode";
 
-orderRouter.post("/create-order", verifyJwt, createOrder);
+orderRouter.post("/create-order", createOrder);
 orderRouter.post("/capture-order", captureOrder);
 orderRouter.post("/", getUniqueCountryMapping);
 
