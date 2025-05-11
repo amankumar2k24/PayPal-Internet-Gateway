@@ -1,0 +1,17 @@
+node_modules
+.metaapi
+logs
+build
+*.zip
+test.js
+t1.js
+post_data.txt
+*.html
+*.bat
+yarn.sh
+*.py
+p1.js
+test.js
+package-lock.json
+.env
+# config/secrets.json # If repository is public

@@ -1,0 +1,42 @@
+{
+  "name": "paypal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "npx rimraf ./build",
+    "start": "node --max-old-space-size=999 build/server.js",
+    "dist": "sh ./scripts/build.sh",
+    "ebs": "./ebs.sh",
+    "debug": "npm run dev",
+    "server": "tsc-watch --outDir ./build --onSuccess \"npm run start -- --mode=http\" --onFailure \"echo ERROR! Compilation Failed\"",
+    "dev": "cross-env NODE_ENV=default npm run server",
+    "prod": "cross-env NODE_ENV=production npm run server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonpath": "^1.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.14.1",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.14",
+    "@types/node-fetch": "^2.6.12",
+    "tsc-watch": "^6.2.1",
+    "typescript": "^5.8.3"
+  }
+}
