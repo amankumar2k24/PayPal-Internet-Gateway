@@ -32,42 +32,44 @@ import { orderModel } from "../models/order";
 // }
 
 
-async function generateAccessToken() {
-    console.log('inside of generateAccessToken');
+export const generateAccessToken = async (req: Request, res: Response): Promise<any> => {
+  console.log('inside of generateAccessToken');
 
-    try {
-        const response = await axios({
-            url: "https://api-m.sandbox.paypal.com/v1/oauth2/token",
-            method: "post",
-            data: "grant_type=client_credentials",
-            auth: {
-                username: process.env.PAYPAL_CLIENT_ID!,
-                password: process.env.PAYPAL_CLIENT_SECRET!
-            },
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        });
+  try {
+    const response = await axios({
+      url: "https://api-m.sandbox.paypal.com/v1/oauth2/token",
+      method: "post",
+      data: "grant_type=client_credentials",
+      auth: {
+        username: process.env.PAYPAL_CLIENT_ID!,
+        password: process.env.PAYPAL_CLIENT_SECRET!
+      },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
 
-        console.log('Access Token Received:', response.data.access_token);
-        return response.data.access_token;
+    console.log('Access Token Received:', response.data.access_token);
+    return res.status(200).json(response.data);
+    // return response.data.access_token;
 
-    } catch (error) {
-        console.error('Error generating access token:', error.response?.data || error.message);
-        throw error;
-    }
+  } catch (error) {
+    console.error('Error generating access token:', error.response?.data || error.message);
+    return res.status(500).json({ error: 'Failed to generate access token' });
+  }
 }
 
 // export const createOrder = async (req: Request, res: Response): Promise<any> => {
-  export const createOrder = async (req: Request, res: Response): Promise<any> => {
+export const createOrder = async (req: Request, res: Response): Promise<any> => {
   const { currency, quantity, price, name } = req.body;
 
   // Optionally handle user authentication here
-  // const user = req.headers.user as any;  // Ensure user is correctly passed in headers
+  const user = req.headers.user as any;  // Ensure user is correctly passed in headers
+  console.log("user=>", user)
 
   try {
-    const accessToken = await generateAccessToken();
-    console.log("accessToken=>", accessToken);
+    // const accessToken = await generateAccessToken();
+    // console.log("accessToken=>", accessToken);
 
     const paypalRes = await axios.post(
       "https://api-m.sandbox.paypal.com/v2/checkout/orders",
@@ -109,17 +111,20 @@ async function generateAccessToken() {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${process.env.PAYPAL_CLIENT_ACCESS_TOKEN}`,
         },
       }
     );
 
     const data: any = paypalRes.data;
     console.log('data', data)
+
     if (data?.id) {
-      await orderModel.create({ orderId: data.id });
+      await orderModel.create({ userId: new ObjectId(user.id), orderId: data.id });
     }
-    return data.links.find((link: any) => link.rel === 'approve').href
+    // return data.links.find((link: any) => link.rel === 'approve').href
+    return response(res, false, 200, "Order created successfully", data);
 
     // res.render("create-order", { orderId: data.id });
   } catch (error: any) {
@@ -131,7 +136,7 @@ async function generateAccessToken() {
 export const captureOrder = async (req: Request, res: Response): Promise<any> => {
   const body = req.body;
   try {
-    const accessToken = await generateAccessToken();
+    // const accessToken = await generateAccessToken();
 
     const paypalRes = await axios.post(
       `https://api-m.sandbox.paypal.com/v2/checkout/orders/${body.orderId}/capture`,
@@ -139,7 +144,8 @@ export const captureOrder = async (req: Request, res: Response): Promise<any> =>
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${process.env.PAYPAL_CLIENT_ACCESS_TOKEN}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
       }
     );

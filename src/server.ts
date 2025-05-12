@@ -26,19 +26,6 @@ app.use(bodyParser.urlencoded({ limit: "200mb", extended: true }));
 app.set('view engine', 'ejs')
 app.set('views', './src/views');
 
-// app.post('/pay', async (req, res) => {
-//   try {
-//     const response = await axios.post('http://localhost:8003/order/create-order', req.body);
-//     console.log("respone", response)
-//     // Assuming your create-order returns a URL for redirection
-//     const redirectUrl = response.data?.url || '/success';
-//     res.redirect(redirectUrl);
-
-//   } catch (error) {
-//     res.send('Error: ' + error)
-//   }
-// })
-
 app.get('/', (req, res) => {
   res.render('index')
 })
